@@ -6,6 +6,11 @@
 
 #define USERJS group( \
         "scripts/custom.js", \
+        "scripts/user.js", \
+    )
+
+#define USERJSALL group( \
+        "scripts/custom.js", \
         "scripts/Fastfox.js", \
         "scripts/Peskyfox.js", \
         "scripts/Securefox.js", \

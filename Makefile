@@ -1,5 +1,7 @@
-URL 	:=https://raw.githubusercontent.com/yokoffing/Betterfox/refs/heads/main
-CURL	:=curl -o
+URL 	= https://raw.githubusercontent.com/yokoffing/Betterfox/refs/heads/main
+CURL	= curl --progress-bar -o
+FILE    = scripts/$@.js
+CALL    = echo [$@]
 
 .PHONY: build clean watch
 
@@ -19,7 +21,12 @@ watch: tools/build
 	done
 
 Fastfox Peskyfox Securefox Smoothfox:
-	$(CURL) scripts/$@.js $(URL)/$@.js
+	@$(CALL)
+	@$(CURL) $(FILE) $(URL)/$@.js
 
-update: Fastfox Peskyfox Securefox Smoothfox
+Betterfox:
+	@$(CALL)
+	@$(CURL) $(FILE) $(URL)/user.js
+
+update: Fastfox Peskyfox Securefox Smoothfox Betterfox
 

@@ -120,36 +120,86 @@ static size_t build__append_subst(char *dst, size_t dst_len, const char *src,
     return dst_len;
 }
 
+static void build__newline(char *out, size_t *n, size_t *bol) {
+    while (*n > *bol && (out[*n - 1] == ' ' || out[*n - 1] == '\t')) (*n)--;
+    if (*n > *bol) out[(*n)++] = '\n';
+    *bol = *n;
+}
+
+static int build__regex_ok(char last) {
+    return last == 0 || strchr("(,=:[!&|?{};+-*%<>~^", last) != NULL;
+}
+
 static char *build__strip_comments(const char *content) {
     size_t len = strlen(content);
     char *out = malloc(len + 1);
     if (!out) { perror("malloc"); exit(1); }
-    size_t out_len = 0;
+    size_t n = 0, bol = 0;
+    char last = 0;
 
     const char *p = content;
     while (*p) {
-        const char *line_start = p;
-        const char *line_end = strchr(p, '\n');
-        size_t line_len = line_end ? (size_t)(line_end - line_start) : strlen(line_start);
+        char c = *p;
 
-        const char *trimmed = line_start;
-        while ((size_t)(trimmed - line_start) < line_len && (*trimmed == ' ' || *trimmed == '\t')) trimmed++;
-        size_t trimmed_len = line_len - (size_t)(trimmed - line_start);
+        if (c == '\r') { p++; continue; }
 
-        int is_comment_line =
-            (trimmed_len >= 2 && trimmed[0] == '/' && trimmed[1] == '/') ||
-            (trimmed_len >= 4 && trimmed[0] == '/' && trimmed[1] == '*' &&
-             trimmed[trimmed_len - 2] == '*' && trimmed[trimmed_len - 1] == '/');
-
-        if (!is_comment_line) {
-            memcpy(out + out_len, line_start, line_len);
-            out_len += line_len;
-            if (line_end) out[out_len++] = '\n';
+        if (c == '\n') {
+            build__newline(out, &n, &bol);
+            p++;
+            continue;
         }
 
-        p = line_end ? line_end + 1 : line_start + line_len;
+        if (c == '/' && p[1] == '/') {
+            while (*p && *p != '\n') p++;
+            continue;
+        }
+
+        if (c == '/' && p[1] == '*') {
+            int nl = 0;
+            for (p += 2; *p && !(p[0] == '*' && p[1] == '/'); p++)
+                if (*p == '\n') nl = 1;
+            if (*p) p += 2;
+            if (nl)
+                build__newline(out, &n, &bol);
+            else if (n > bol && out[n - 1] != ' ' && out[n - 1] != '\t')
+                out[n++] = ' ';
+            continue;
+        }
+
+        if (c == '"' || c == '\'' || c == '`') {
+            out[n++] = *p++;
+            while (*p && *p != c) {
+                if (*p == '\r') { p++; continue; }
+                if (*p == '\\' && p[1]) out[n++] = *p++;
+                if (*p == '\r') continue;
+                if (*p == '\n') { out[n++] = *p++; bol = n; continue; }
+                out[n++] = *p++;
+            }
+            if (*p) out[n++] = *p++;
+            last = c;
+            continue;
+        }
+
+        if (c == '/' && build__regex_ok(last)) {
+            int cls = 0;
+            out[n++] = *p++;
+            while (*p && *p != '\n') {
+                if (*p == '\r') { p++; continue; }
+                if (*p == '\\' && p[1] != '\n' && p[1] != '\r') out[n++] = *p++;
+                else if (*p == '[') cls = 1;
+                else if (*p == ']') cls = 0;
+                else if (*p == '/' && !cls) { out[n++] = *p++; break; }
+                out[n++] = *p++;
+            }
+            last = '/';
+            continue;
+        }
+
+        out[n++] = c;
+        p++;
+        if (c != ' ' && c != '\t') last = c;
     }
-    out[out_len] = '\0';
+    out[n] = '\0';
     return out;
 }
 
