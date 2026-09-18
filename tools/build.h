@@ -195,19 +195,8 @@ static void build_userscript_header(build_t *b, const build_meta_t *m) {
         b->out_len += (size_t)n; \
     } while (0)
 
-    BUILD__EMIT("%s", "// ==UserScript==\n");
     if (m->name)         BUILD__EMIT("// @name         %s\n", m->name);
-    if (m->namespace_)   BUILD__EMIT("// @namespace    %s\n", m->namespace_);
     BUILD__EMIT("// @version      %s\n", b->version ? b->version : "0.0.0");
-    if (m->description)  BUILD__EMIT("// @description  %s\n", m->description);
-    for (size_t i = 0; i < m->match_count; i++)
-        BUILD__EMIT("// @match        %s\n", m->match[i]);
-    for (size_t i = 0; i < m->grant_count; i++)
-        BUILD__EMIT("// @grant        %s\n", m->grant[i]);
-    for (size_t i = 0; i < m->extra_count; i++)
-        BUILD__EMIT("// @%-12s %s\n", m->extra[i].key, m->extra[i].value);
-    BUILD__EMIT("// @run-at       %s\n", m->run_at ? m->run_at : "document-start");
-    BUILD__EMIT("%s", "// ==/UserScript==\n\n");
 
 #undef BUILD__EMIT
 }

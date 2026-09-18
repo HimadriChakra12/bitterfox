@@ -1,6 +1,9 @@
+URL 	:=https://raw.githubusercontent.com/yokoffing/Betterfox/refs/heads/main
+CURL	:=curl -o
+
 .PHONY: build clean watch
 
-build: tools/build
+build: tools/build 
 	./tools/build
 
 tools/build: tools/build.c tools/build.h
@@ -14,3 +17,9 @@ watch: tools/build
 		./tools/build; \
 		inotifywait -qre modify src tools/VERSION > /dev/null; \
 	done
+
+Fastfox Peskyfox Securefox Smoothfox:
+	$(CURL) scripts/$@.js $(URL)/$@.js
+
+update: Fastfox Peskyfox Securefox Smoothfox
+

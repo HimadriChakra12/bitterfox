@@ -1,44 +1,24 @@
-#define OUTFILE "" //OUTPUT
-//#define BUILD_WITH_MUJS
+#define OUTFILE "dist/user.js" //OUTPUT
 #include "build.h"
-//#include "mujscompiler.h"
 
-#define NAME        ""
-#define NAMESPACE   ""
-#define DESCRIPTION ""
+#define NAME        "eaterfox"
+#define DESCRIPTION "Betterfox Fetcher cause I am too lazy to reconfig the whole every time"
 
-listmatch(
-    "",
-    );
-
-listgrant(
-    "unsafeWindow",
-    "GM_download"
-    );
-
-/* Custom @tag lines that don't have a fixed build_meta_t field. */
-listextra(
-    { "//NAME", "//Description" },
-    );
-
-#define GROUPNAME group( \
-    "src/group/script.js", \
+#define USERJS group( \
+        "scripts/custom.js", \
+        "scripts/Fastfox.js", \
+        "scripts/Peskyfox.js", \
+        "scripts/Securefox.js", \
+        "scripts/Smoothfox.js", \
     )
  
 listorder(
-    "src/start.js",
-    GROUPNAME
-    "src/end.js",
+    USERJS
     );
 
 declaremeta(
     .name = NAME,
-    .namespace_ = NAMESPACE,
     .description = DESCRIPTION,
-    .match = MATCH, .match_count = MATCH_COUNT,
-    .grant = GRANT, .grant_count = GRANT_COUNT,
-    .run_at = "document-start",
-    .extra = EXTRA, .extra_count = EXTRA_COUNT,
 );
 
 int main(void) {
