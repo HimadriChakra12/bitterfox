@@ -1,4 +1,4 @@
-// @name         eaterfox
+// @name         Bitterfox
 // @version      1.0.0
 // ---- scripts/Betterfox.js ----
 user_pref("gfx.content.skia-font-cache-size", 20);
@@ -146,5 +146,5 @@ user_pref("apz.overscroll.enabled", true);
 user_pref("layout.css.scroll-behavior.spring-constant", 0.5);
 user_pref("apz.fling_friction", 0.002);
 user_pref("apz.fling_stopped_threshold", 0.0);
-user_pref("browser.ai.control.default", "default");
+user_pref("browser.ai.control.default", "available");
 

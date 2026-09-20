@@ -1,7 +1,7 @@
 #define OUTFILE "dist/user.js" //OUTPUT
 #include "build.h"
 
-#define NAME        "eaterfox"
+#define NAME        "Bitterfox"
 #define DESCRIPTION "Betterfox Fetcher cause I am too lazy to reconfig the whole every time"
 
 #define USERJS group( \
