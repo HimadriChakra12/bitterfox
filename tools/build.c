@@ -5,8 +5,8 @@
 #define DESCRIPTION "Betterfox Fetcher cause I am too lazy to reconfig the whole every time"
 
 #define USERJS group( \
+        "scripts/Betterfox.js", \
         "scripts/custom.js", \
-        "scripts/user.js", \
     )
 
 #define USERJSALL group( \
